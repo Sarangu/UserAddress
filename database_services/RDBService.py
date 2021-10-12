@@ -86,7 +86,7 @@ class RDBService:
     @classmethod
     def find_by_template(cls, db_schema, table_name, template, field_list):
 
-        wc,args = RDBService._get_where_clause_args(template)
+        wc,args = RDBService.get_where_clause_args(template)
 
         conn = RDBService._get_db_connection()
         cur = conn.cursor()
@@ -111,11 +111,44 @@ class RDBService:
             vals.append('%s')
             args.append(v)
 
+
         cols_clause = "(" + ",".join(cols) + ")"
         vals_clause = "values (" + ",".join(vals) + ")"
 
         sql_stmt = "insert into " + db_schema + "." + table_name + " " + cols_clause + \
             " " + vals_clause
 
-        res = RDBService._run_sql(sql_stmt, args)
+        res = RDBService.run_sql(sql_stmt, args)
+        return res
+
+    @classmethod
+    def delete_by_template(cls, db_schema, table_name, template):
+
+        wc, args = RDBService.get_where_clause_args(template)
+
+        sql = "delete from " + db_schema + "." + table_name + " " + wc
+
+        res = RDBService.run_sql(sql, args)
+        return res
+
+    @classmethod
+    def update_by_primary_key(cls, db_schema, table_name, key, template):
+
+        wc, args_wc = RDBService.get_where_clause_args(key)
+
+        cols = []
+        vals = []
+        args = []
+        terms = []
+
+        for k, v in template.items():
+            cols.append(k)
+            vals.append('%s')
+            args.append(v)
+            terms.append(k + "=%s")
+
+        new_values = " , ".join(terms)
+
+        sql = "update " + db_schema + "." + table_name + " set " + new_values + " " + wc
+        res = RDBService.run_sql(sql, (args, args_wc))
         return res
