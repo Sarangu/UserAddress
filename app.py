@@ -39,8 +39,19 @@ def hello_world():
 @app.route('/users', methods=['GET', 'POST'])
 def user_collection():
     if flask.request.method == 'GET':
-        res = UserResource.get_by_template(None)
-        rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+        limit = request.args.get('limit')
+        offset = request.args.get('offset')
+        field_list = request.args.get('field')
+        last_name = request.args.get('last_name')
+        template = None
+        if last_name is not None:
+            template = {"last_name":last_name}
+        res = UserResource.get_by_template(template, limit, offset, field_list)
+        if len(res)!= 0:
+            status = 200
+        else:
+            status = 404
+        rsp = Response(json.dumps(res, default=str), status=status, content_type="application/json")
         return rsp
     else:
         template = request.get_json()
@@ -49,7 +60,7 @@ def user_collection():
             resp = "Record(s) successfully inserted!"
         else:
             resp = "Could not insert, please check input and try again!"
-        rsp = Response(json.dumps(resp, default=str), status=200, content_type="application/json")
+        rsp = Response(json.dumps(resp, default=str), status=201, content_type="application/json")
         return rsp
 
 
@@ -57,7 +68,11 @@ def user_collection():
 def specific_user(user_id):
     if flask.request.method == 'GET':
         res = UserResource.get_by_primary_key(user_id)
-        rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+        if len(res)!= 0:
+            status = 200
+        else:
+            status = 404
+        rsp = Response(json.dumps(res, default=str), status=status, content_type="application/json")
         return rsp
     elif flask.request.method == "DELETE":
         res = UserResource.delete_by_primary_key(user_id)
@@ -65,15 +80,17 @@ def specific_user(user_id):
             resp = "Record(s) successfully deleted!"
         else:
             resp = "Could not delete, does not exist!"
-        rsp = Response(json.dumps(resp, default=str), status=200, content_type="application/json")
+        rsp = Response(json.dumps(resp, default=str), status=204, content_type="application/json")
         return rsp
     else:
         template = request.get_json()
         res = UserResource.update_by_primary_key(user_id, template)
-        if res != 0:
+        if res == 1:
             resp = "Record(s) successfully updated!"
-        else:
+        elif res == 0:
             resp = "Could not update, does not exist!"
+        elif res == 2:
+            resp = "Invalid/Bad data, try again!"
         rsp = Response(json.dumps(resp, default=str), status=200, content_type="application/json")
         return rsp
 
@@ -82,7 +99,11 @@ def specific_user(user_id):
 def user_address(user_id):
     if flask.request.method == 'GET':
         res = UserResource.get_address_by_user_no(user_id)
-        rsp = Response(json.dumps(res, default=str), status=200, content_type="application/json")
+        if len(res)!= 0:
+            status = 200
+        else:
+            status = 404
+        rsp = Response(json.dumps(res, default=str), status=status, content_type="application/json")
         return rsp
     elif flask.request.method == "DELETE":
         res = UserResource.delete_address_by_user_no(user_id)
@@ -90,7 +111,7 @@ def user_address(user_id):
             resp = "Record(s) successfully deleted!"
         else:
             resp = "Could not delete, does not exist!"
-        rsp = Response(json.dumps(resp, default=str), status=200, content_type="application/json")
+        rsp = Response(json.dumps(resp, default=str), status=204, content_type="application/json")
         return rsp
     elif flask.request.method == 'PUT':
         template = request.get_json()
@@ -111,7 +132,7 @@ def user_address(user_id):
                 resp = "Record(s) successfully inserted!"
             else:
                 resp = "Could not insert, please check input and try again!"
-            rsp = Response(json.dumps(resp, default=str), status=200, content_type="application/json")
+            rsp = Response(json.dumps(resp, default=str), status=201, content_type="application/json")
             return rsp
         else:
             resp = "User does not exist!"

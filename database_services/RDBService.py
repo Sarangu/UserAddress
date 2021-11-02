@@ -47,6 +47,22 @@ class RDBService:
         return res
 
     @classmethod
+    def check_if_issue(cls, sql_statement, args, fetch=False):
+
+        conn = RDBService._get_db_connection()
+
+        try:
+            cur = conn.cursor()
+            res = cur.execute(sql_statement, args=args)
+            if fetch:
+                res = cur.fetchall()
+        except Exception as e:
+            conn.close()
+            return 1
+
+        return 0
+
+    @classmethod
     def get_by_prefix(cls, db_schema, table_name, column_name, value_prefix):
 
         conn = RDBService._get_db_connection()
@@ -84,16 +100,25 @@ class RDBService:
         return clause, args
 
     @classmethod
-    def find_by_template(cls, db_schema, table_name, template, field_list):
+    def find_by_template(cls, db_schema, table_name, template, limit, offset, field_list):
 
         wc,args = RDBService.get_where_clause_args(template)
 
         conn = RDBService._get_db_connection()
         cur = conn.cursor()
 
-        sql = "select * from " + db_schema + "." + table_name + " " + wc
-        res = cur.execute(sql, args=args)
-        res = cur.fetchall()
+        limit_offset_stmt = ''
+        if limit is not None and offset is not None:
+            limit_offset_stmt = "limit " + limit + " offset " + offset
+        elif limit is not None:
+            limit_offset_stmt = "limit " + limit
+        if field_list is None:
+            sql = "select * from " + db_schema + "." + table_name + " " + wc + " " + limit_offset_stmt
+        else:
+            sql = "select " + field_list + " from " + db_schema + "." + table_name + " " + wc + " " + limit_offset_stmt
+        res = RDBService.run_sql(sql, args, True)
+        # res = cur.execute(sql, args=args)
+        # res = cur.fetchall()
 
         conn.close()
 
@@ -150,5 +175,8 @@ class RDBService:
         new_values = " , ".join(terms)
 
         sql = "update " + db_schema + "." + table_name + " set " + new_values + " " + wc
+        # check = RDBService.check_if_issue(sql, (args, args_wc))
+        # if check:
+        #     return 2
         res = RDBService.run_sql(sql, (args, args_wc))
         return res

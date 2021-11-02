@@ -8,16 +8,16 @@ class UserResource(BaseRDBApplicationResource):
         super().__init__()
 
     @classmethod
-    def get_by_template(cls, template):
+    def get_by_template(cls, template, limit, offset, field_list):
         res = d_service.RDBService.find_by_template("UserAddress", "user",
-                                                    template, None)
+                                                    template, limit, offset, field_list)
         return res
 
     @classmethod
     def get_by_primary_key(cls, key):
         template = {"user_no":key}
         res = d_service.RDBService.find_by_template("UserAddress", "user",
-                                                    template, None)
+                                                    template, None, None, None)
         return res
 
     @classmethod
@@ -41,7 +41,7 @@ class UserResource(BaseRDBApplicationResource):
     def get_address_by_user_no(cls, key):
         template = {"user_number": key}
         res = d_service.RDBService.find_by_template("UserAddress", "address",
-                                                    template, None)
+                                                    template, None, None, None)
         return res
 
     @classmethod

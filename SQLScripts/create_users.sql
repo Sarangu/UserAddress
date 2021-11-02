@@ -33,7 +33,7 @@ CREATE TABLE address (
   state varchar(20) NOT NULL,
   postal_code varchar(10) NOT NULL,
   user_number integer NOT NULL,
-  FOREIGN KEY (user_number) REFERENCES user(user_no)
+  FOREIGN KEY (user_number) REFERENCES user(user_no) on delete cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
