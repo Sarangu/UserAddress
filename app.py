@@ -1,9 +1,10 @@
 import flask
-from flask import Flask, Response, request
+from flask import Flask, Response, request, render_template
 from flask_cors import CORS
 import json
 import logging
 from datetime import datetime
+import subprocess
 
 import utils.rest_utils as rest_utils
 
@@ -33,7 +34,7 @@ def health_check():
 
 @app.route('/')
 def hello_world():
-    return '<u>Hello World!</u>'
+    return render_template('index.html')
 
 
 @app.route('/users', methods=['GET', 'POST'])
@@ -148,4 +149,5 @@ def user_address(user_id):
 
 
 if __name__ == '__main__':
+    subprocess.call(('python3 static.py'), shell=True)
     app.run(host="0.0.0.0", port=5001)
