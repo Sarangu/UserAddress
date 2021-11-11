@@ -53,9 +53,8 @@ def authorize():
   authorization_url, state = flow.authorization_url(
       # Enable offline access so that you can refresh an access token without
       # re-prompting the user for permission. Recommended for web server apps.
-      access_type='offline',
-      # Enable incremental authorization. Recommended as a best practice.
-      include_granted_scopes='true')
+      access_type='offline')
+      # Enable incremental authorization. Recommended as a best practice.)
 
   # Store the state so the callback can verify the auth server response.
   flask.session['state'] = state
