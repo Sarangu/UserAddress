@@ -35,7 +35,7 @@ def index():
 
 @app.route('/test')
 def test_api_request():
-  return render_template('index.html')
+  return render_template('templates/index.html')
 
 
 @app.route('/authorize')
@@ -123,9 +123,9 @@ def credentials_to_dict(credentials):
 
 def print_index_table():
   return ('<table>' +
-          '<tr><td><a href="/authorize">Verify Your Account </a></td>' +
+          '<tr><td><a href="/authorize"> Login to your account </a></td>' +
+          '<tr><td><a href="/test"> Continue as Guest </a></td>' +
           '</td></tr></table>')
-
 
 if __name__ == '__main__':
   # When running locally, disable OAuthlib's HTTPs verification.
