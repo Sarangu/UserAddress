@@ -162,6 +162,8 @@ def user_address(user_id):
 def test_api_request():
   return render_template('index.html')
 
+## TODO
+## duplicate email
 @app.route('/submit', methods = ['POST'])
 def signup():
     fname = request.form['fname']

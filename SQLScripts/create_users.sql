@@ -1,5 +1,6 @@
 USE UserAddress;
 
+SET foreign_key_checks = 0;
 DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -26,7 +27,7 @@ DROP TABLE IF EXISTS `address`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE address (
-  street_number integer NOT NULL,
+  street_number varchar(25) NOT NULL,
   street_name1 varchar(25) DEFAULT NULL,
   street_name2 varchar(25) DEFAULT NULL,
   city varchar(45) NOT NULL,
